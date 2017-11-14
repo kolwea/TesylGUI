@@ -27,32 +27,26 @@ import javafx.util.Duration;
  */
 public class Background_Starfield extends Background {
 
-    private ArrayList<Circle> stars;
+    private ArrayList<Star> stars;
     private int[] direction;
     private Line[] lines;
     private final double minStarSize = 5.0,
-            maxStarSize = 15.0,
-            strokeWidth = 1.0,
-            margin = 1.0,
-            connectProb = 100,
-            pointProb = 20,
-            changeRate = 0.05;
+            maxStarSize = 18.0,
+            margin = 8.0,
+            connectProb = 70,
+            connectRadius = 1,
+            pointProb = 40,
+            scatterMin = -20.0,
+            scatterMax = 20,
+            changeRate = 0.03;
     private Timeline timeline;
     private KeyFrame keyframe;
-    private Dimension screenSize;
 
     public Background_Starfield(Pane parent) {
         super(parent);
         pane = new Pane();
         pane.setMinSize(1500, 1000);
-        setupField();
-        testPoints();
-        this.setupTimeline();
-    }
-
-    private void setupField() {
-        this.width = pane.getMinWidth();
-        this.height = pane.getMinHeight();
+        this.setup();
 
     }
 
@@ -66,7 +60,7 @@ public class Background_Starfield extends Background {
         return this.pane;
     }
 
-    //Helper Functions/////////////////////////////////////////////////////
+    //Timeline Control//////////////////////////////////////////////////////////
     private void setupTimeline() {
         keyframe = new KeyFrame(Duration.millis(10), (ActionEvent event) -> {
             update();
@@ -78,29 +72,30 @@ public class Background_Starfield extends Background {
 
     private void update() {
         for (int i = 0; i < stars.size(); i++) {
-            Circle curr = stars.get(i);
-            if (curr.getRadius() <= minStarSize) {
-                direction[i] = 1;
-            } else if (curr.getRadius() >= maxStarSize) {
-                direction[i] = 0;
-            }
-            if (direction[i] == 1) {
-                curr.setRadius(curr.getRadius() + Math.random() * changeRate);
-            } else {
-                curr.setRadius(curr.getRadius() - Math.random() * changeRate);
-            }
-            if (this.map(curr.getRadius()) > 255) {
-                System.out.println("Radius: " + curr.getRadius() + " Map: " + this.map(curr.getRadius()));
-            }
-            curr.setFill(Color.rgb((int) map(curr.getRadius()), 200, (int) map(curr.getRadius())));
+            stars.get(i).update();
         }
     }
 
-    public void testPoints() {
+    //Field Setup///////////////////////////////////////////////////////////////
+    private void setup() {
+//        setupField();
+        setupStars();
+        scatterStars();
+        makeConstellations();
+        setupTimeline();
+    }
+
+//    private void setupField() {
+//        this.width = pane.getMinWidth();
+//        this.height = pane.getMinHeight();
+//    }
+    private void setupStars() {
         stars = new ArrayList<>();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
         int offset = 0;
         int row = 0;
-        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
         for (int k = (int) (2 * maxStarSize); k < screenSize.getHeight() - maxStarSize; k += 2 * maxStarSize + margin) {
             if (row % 2 == 0) {
                 offset = (int) maxStarSize;
@@ -108,59 +103,48 @@ public class Background_Starfield extends Background {
                 offset = 0;
             }
             for (int i = (int) (2 * maxStarSize + offset); i < screenSize.getWidth() - maxStarSize; i += 2 * maxStarSize + margin) {
-                double maybe = Math.random() * 100 + 1;
+                double maybe = Math.random() * 100;
                 if (maybe <= pointProb) {
-                    Circle test = new Circle();
-                    test.setRadius(Math.random() * maxStarSize + minStarSize);
-                    test.setCenterX(i);
-                    test.setCenterY(k);
-                    test.setFill(Color.BROWN);
+                    Star test = new Star(new Vector(i, k), Math.random() * maxStarSize + minStarSize);
                     stars.add(test);
-                    pane.getChildren().add(test);
+                    pane.getChildren().add(test.getBody());
                 }
             }
             row++;
         }
-        direction = new int[stars.size()];
-        for (int i = 0; i < direction.length; i++) {
+        for (int i = 0; i < stars.size(); i++) {
             double maybe = Math.random() * 100;
             if (maybe >= 51) {
-                direction[i] = 1;
+                stars.get(i).setGrow(true);
             }
         }
-        this.makeConstilations();
     }
 
-    private void makeConstilations() {
-        for (Circle a : stars) {
-            double oldWidth = a.getRadius();
-            a.setRadius((maxStarSize + margin) * 2);
-            for (Circle b : stars) {
-                if (b != a && a.intersects(b.getBoundsInParent())) {
+    private void makeConstellations() {
+        for (Star a : stars) {
+            double oldWidth = a.getBody().getRadius();
+            a.getBody().setRadius((maxStarSize + margin) * connectRadius);
+            for (Star b : stars) {
+                if (b != a && a.getBody().intersects(b.getBody().getBoundsInParent())) {
                     double maybe = Math.random() * 100;
                     if (maybe <= connectProb) {
-                        this.connect(a, b);
+                        this.connect(a.getBody(), b.getBody());
                     }
                 }
             }
-            a.setRadius(oldWidth);
+            a.getBody().setRadius(oldWidth);
         }
     }
 
+    //Helper Functions//////////////////////////////////////////////////////////
     protected void connect(Circle one, Circle two) {
         Node n1 = one, n2 = two;
-//        double strokeWidth;
-//        if (one.getRadius() < two.getRadius()) {
-//            strokeWidth = one.getRadius() / 2;
-//        } else {
-//            strokeWidth = two.getRadius() / 2;
-//        }
         if (pane == null) {
             System.out.println("Tis null");
         } else {
             Pane parent = pane;
             Line line = new Line();
-            line.setStrokeWidth(strokeWidth);
+            line.setStrokeWidth(1);
             line.startXProperty().bind(Bindings.createDoubleBinding(() -> {
                 Bounds b = n1.getBoundsInParent();
                 return b.getMinX() + b.getWidth() / 2;
@@ -184,10 +168,27 @@ public class Background_Starfield extends Background {
         }
     }
 
-    private double map(double x) {
-        double inMin = 0, inMax = this.maxStarSize + 5, outMin = 1, outMax = 255;
+    private double mapColor(double x) {
+        double inMin = 0, inMax = this.maxStarSize + 6, outMin = 1, outMax = 255;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         return done;
     }
 
+    private void scatterStars() {
+        boolean touched;
+        for (Star curr : stars) {
+            scatter(curr.getBody());
+        }
+    }
+
+    private void scatter(Circle a) {
+        double maybe = Math.random() * 100;
+        if (maybe >= 50) {
+            a.setCenterX((Math.random() * scatterMax + scatterMin) + a.getCenterX());
+            a.toBack();
+        } else {
+            a.setCenterY((Math.random() * scatterMax + scatterMin) + a.getCenterY());
+            a.toBack();
+        }
+    }
 }
