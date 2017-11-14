@@ -5,6 +5,8 @@
  */
 package Background_Starfield;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -25,10 +27,18 @@ import javafx.util.Duration;
  */
 public class Background_Starfield extends Background {
 
-    private ArrayList<Circle> stars;
+    private ArrayList<Star> stars;
     private int[] direction;
     private Line[] lines;
-    private double minStarSize = 2.0, maxStarSize = 8.0, strokeWidth = 1.0, margin = 2.0;
+    private final double minStarSize = 5.0,
+            maxStarSize = 18.0,
+            margin = 8.0,
+            connectProb = 70,
+            connectRadius = 1,
+            pointProb = 40,
+            scatterMin = -20.0,
+            scatterMax = 20,
+            changeRate = 0.03;
     private Timeline timeline;
     private KeyFrame keyframe;
 
@@ -36,14 +46,7 @@ public class Background_Starfield extends Background {
         super(parent);
         pane = new Pane();
         pane.setMinSize(1500, 1000);
-        setupField();
-        testPoints();
-        this.setupTimeline();
-    }
-
-    private void setupField() {
-        this.width = pane.getMinWidth();
-        this.height = pane.getMinHeight();
+        this.setup();
 
     }
 
@@ -57,17 +60,9 @@ public class Background_Starfield extends Background {
         return this.pane;
     }
 
-    //Helper Functions/////////////////////////////////////////////////////
-    private int getStarColumnCount() {
-        return (int) (height / (maxStarSize + margin));
-    }
-
-    private int getStarRowCount() {
-        return (int) (height / (maxStarSize + margin));
-    }
-
+    //Timeline Control//////////////////////////////////////////////////////////
     private void setupTimeline() {
-        keyframe = new KeyFrame(Duration.millis(25), (ActionEvent event) -> {
+        keyframe = new KeyFrame(Duration.millis(10), (ActionEvent event) -> {
             update();
         });
         timeline = new Timeline(keyframe);
@@ -77,83 +72,79 @@ public class Background_Starfield extends Background {
 
     private void update() {
         for (int i = 0; i < stars.size(); i++) {
-            Circle curr = stars.get(i);
-            if (curr.getRadius() <= minStarSize) {
-                direction[i] = 1;
-            } else if (curr.getRadius() >= maxStarSize) {
-                direction[i] = 0;
-            }
-            if (direction[i] == 1) {
-                curr.setRadius(curr.getRadius() + Math.random());
-            } else {
-                curr.setRadius(curr.getRadius() - Math.random());
-            }
-//            System.out.println("Radius: " + curr.getRadius() + " Map: " + this.map(curr.getRadius()));
-            curr.setFill(Color.rgb((int) map(curr.getRadius()), 110, (int) map(curr.getRadius())));
+            stars.get(i).update();
         }
     }
 
-    public void testPoints() {
+    //Field Setup///////////////////////////////////////////////////////////////
+    private void setup() {
+//        setupField();
+        setupStars();
+        scatterStars();
+        makeConstellations();
+        setupTimeline();
+    }
+
+//    private void setupField() {
+//        this.width = pane.getMinWidth();
+//        this.height = pane.getMinHeight();
+//    }
+    private void setupStars() {
         stars = new ArrayList<>();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
         int offset = 0;
         int row = 0;
-        for (int k = (int) (2 * maxStarSize); k < height - maxStarSize; k += 2 * maxStarSize + margin) {
+
+        for (int k = (int) (2 * maxStarSize); k < screenSize.getHeight() - maxStarSize; k += 2 * maxStarSize + margin) {
             if (row % 2 == 0) {
                 offset = (int) maxStarSize;
             } else {
                 offset = 0;
             }
-            for (int i = (int) (2 * maxStarSize + offset); i < width - maxStarSize; i += 2 * maxStarSize + margin) {
-                Circle test = new Circle();
-                test.setRadius(Math.random() * maxStarSize + minStarSize);
-                test.setCenterX(i);
-                test.setCenterY(k);
-                test.setFill(Color.BROWN);
-                stars.add(test);
-                pane.getChildren().add(test);
+            for (int i = (int) (2 * maxStarSize + offset); i < screenSize.getWidth() - maxStarSize; i += 2 * maxStarSize + margin) {
+                double maybe = Math.random() * 100;
+                if (maybe <= pointProb) {
+                    Star test = new Star(new Vector(i, k), Math.random() * maxStarSize + minStarSize);
+                    stars.add(test);
+                    pane.getChildren().add(test.getBody());
+                }
             }
             row++;
         }
-        direction = new int[stars.size()];
-        for (int i = 0; i < direction.length; i++) {
+        for (int i = 0; i < stars.size(); i++) {
             double maybe = Math.random() * 100;
-            if (maybe <= 50) {
-                direction[i] = 1;
+            if (maybe >= 51) {
+                stars.get(i).setGrow(true);
             }
         }
-        this.makeConstilations();
     }
 
-    private void makeConstilations() {
-        for (Circle a : stars) {
-            double oldWidth = a.getRadius();
-            a.setRadius(maxStarSize * 2 + margin);
-            for (Circle b : stars) {
-                if (b != a && a.intersects(b.getBoundsInParent())) {
+    private void makeConstellations() {
+        for (Star a : stars) {
+            double oldWidth = a.getBody().getRadius();
+            a.getBody().setRadius((maxStarSize + margin) * connectRadius);
+            for (Star b : stars) {
+                if (b != a && a.getBody().intersects(b.getBody().getBoundsInParent())) {
                     double maybe = Math.random() * 100;
-                    if (maybe <= 30) {
-                        this.connect(a, b);
+                    if (maybe <= connectProb) {
+                        this.connect(a.getBody(), b.getBody());
                     }
                 }
             }
-            a.setRadius(oldWidth);
+            a.getBody().setRadius(oldWidth);
         }
     }
 
+    //Helper Functions//////////////////////////////////////////////////////////
     protected void connect(Circle one, Circle two) {
         Node n1 = one, n2 = two;
-        double strokeWidth;
-        if (one.getRadius() < two.getRadius()) {
-            strokeWidth = one.getRadius() / 2;
-        } else {
-            strokeWidth = two.getRadius() / 2;
-        }
         if (pane == null) {
             System.out.println("Tis null");
         } else {
             Pane parent = pane;
             Line line = new Line();
-            line.setStrokeWidth(strokeWidth);
+            line.setStrokeWidth(1);
             line.startXProperty().bind(Bindings.createDoubleBinding(() -> {
                 Bounds b = n1.getBoundsInParent();
                 return b.getMinX() + b.getWidth() / 2;
@@ -170,16 +161,34 @@ public class Background_Starfield extends Background {
                 Bounds b = n2.getBoundsInParent();
                 return b.getMinY() + b.getHeight() / 2;
             }, n2.boundsInParentProperty()));
+            line.strokeWidthProperty().bind(one.radiusProperty().add(two.radiusProperty()).divide(10));
             parent.getChildren().add(line);
             n1.toFront();
             n2.toFront();
         }
     }
 
-    private double map(double x) {
-        double inMin = 0, inMax = this.maxStarSize+1, outMin = 50, outMax = 210;
+    private double mapColor(double x) {
+        double inMin = 0, inMax = this.maxStarSize + 6, outMin = 1, outMax = 255;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         return done;
     }
 
+    private void scatterStars() {
+        boolean touched;
+        for (Star curr : stars) {
+            scatter(curr.getBody());
+        }
+    }
+
+    private void scatter(Circle a) {
+        double maybe = Math.random() * 100;
+        if (maybe >= 50) {
+            a.setCenterX((Math.random() * scatterMax + scatterMin) + a.getCenterX());
+            a.toBack();
+        } else {
+            a.setCenterY((Math.random() * scatterMax + scatterMin) + a.getCenterY());
+            a.toBack();
+        }
+    }
 }

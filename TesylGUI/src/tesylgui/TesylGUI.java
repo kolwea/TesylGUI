@@ -5,40 +5,44 @@
  */
 package tesylgui;
 
-import Background_Starfield.Background_Starfield;
+import View_Main.Main_Model;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
  *
  * @author Kolbe
  */
+
 public class TesylGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        StackPane root = new StackPane();
-        Background_Starfield stars = new Background_Starfield(root);
-        
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(1100);
+        Main_Model main = new Main_Model(primaryStage);
+        Pane root = main.getRoot();
+//        Background_Starfield stars = new Background_Starfield(root);
+
         Button btn = new Button();
         btn.setText("Populate");
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (stars != null) {
-                    stars.testPoints();
-                }
+//                if (stars != null) {
+//                    stars.testPoints();
+//                }
             }
         });
 
-        root.getChildren().addAll(stars.getPane(), btn);
-
-        Scene scene = new Scene(root, 1500, 1000);
+//        root.getChildren().addAll(stars.getPane(), btn);
+        Scene scene = new Scene(root, 1100, 600);
+        scene.getStylesheets().add("tesylgui/MainStyle.css");
 
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
