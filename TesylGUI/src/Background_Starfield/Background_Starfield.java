@@ -5,6 +5,8 @@
  */
 package Background_Starfield;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -28,9 +30,16 @@ public class Background_Starfield extends Background {
     private ArrayList<Circle> stars;
     private int[] direction;
     private Line[] lines;
-    private double minStarSize = 2.0, maxStarSize = 8.0, strokeWidth = 1.0, margin = 2.0;
+    private final double minStarSize = 5.0,
+            maxStarSize = 15.0,
+            strokeWidth = 1.0,
+            margin = 1.0,
+            connectProb = 100,
+            pointProb = 20,
+            changeRate = 0.05;
     private Timeline timeline;
     private KeyFrame keyframe;
+    private Dimension screenSize;
 
     public Background_Starfield(Pane parent) {
         super(parent);
@@ -58,16 +67,8 @@ public class Background_Starfield extends Background {
     }
 
     //Helper Functions/////////////////////////////////////////////////////
-    private int getStarColumnCount() {
-        return (int) (height / (maxStarSize + margin));
-    }
-
-    private int getStarRowCount() {
-        return (int) (height / (maxStarSize + margin));
-    }
-
     private void setupTimeline() {
-        keyframe = new KeyFrame(Duration.millis(25), (ActionEvent event) -> {
+        keyframe = new KeyFrame(Duration.millis(10), (ActionEvent event) -> {
             update();
         });
         timeline = new Timeline(keyframe);
@@ -84,12 +85,14 @@ public class Background_Starfield extends Background {
                 direction[i] = 0;
             }
             if (direction[i] == 1) {
-                curr.setRadius(curr.getRadius() + Math.random());
+                curr.setRadius(curr.getRadius() + Math.random() * changeRate);
             } else {
-                curr.setRadius(curr.getRadius() - Math.random());
+                curr.setRadius(curr.getRadius() - Math.random() * changeRate);
             }
-//            System.out.println("Radius: " + curr.getRadius() + " Map: " + this.map(curr.getRadius()));
-            curr.setFill(Color.rgb((int) map(curr.getRadius()), 110, (int) map(curr.getRadius())));
+            if (this.map(curr.getRadius()) > 255) {
+                System.out.println("Radius: " + curr.getRadius() + " Map: " + this.map(curr.getRadius()));
+            }
+            curr.setFill(Color.rgb((int) map(curr.getRadius()), 200, (int) map(curr.getRadius())));
         }
     }
 
@@ -97,27 +100,31 @@ public class Background_Starfield extends Background {
         stars = new ArrayList<>();
         int offset = 0;
         int row = 0;
-        for (int k = (int) (2 * maxStarSize); k < height - maxStarSize; k += 2 * maxStarSize + margin) {
+        screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        for (int k = (int) (2 * maxStarSize); k < screenSize.getHeight() - maxStarSize; k += 2 * maxStarSize + margin) {
             if (row % 2 == 0) {
                 offset = (int) maxStarSize;
             } else {
                 offset = 0;
             }
-            for (int i = (int) (2 * maxStarSize + offset); i < width - maxStarSize; i += 2 * maxStarSize + margin) {
-                Circle test = new Circle();
-                test.setRadius(Math.random() * maxStarSize + minStarSize);
-                test.setCenterX(i);
-                test.setCenterY(k);
-                test.setFill(Color.BROWN);
-                stars.add(test);
-                pane.getChildren().add(test);
+            for (int i = (int) (2 * maxStarSize + offset); i < screenSize.getWidth() - maxStarSize; i += 2 * maxStarSize + margin) {
+                double maybe = Math.random() * 100 + 1;
+                if (maybe <= pointProb) {
+                    Circle test = new Circle();
+                    test.setRadius(Math.random() * maxStarSize + minStarSize);
+                    test.setCenterX(i);
+                    test.setCenterY(k);
+                    test.setFill(Color.BROWN);
+                    stars.add(test);
+                    pane.getChildren().add(test);
+                }
             }
             row++;
         }
         direction = new int[stars.size()];
         for (int i = 0; i < direction.length; i++) {
             double maybe = Math.random() * 100;
-            if (maybe <= 50) {
+            if (maybe >= 51) {
                 direction[i] = 1;
             }
         }
@@ -127,11 +134,11 @@ public class Background_Starfield extends Background {
     private void makeConstilations() {
         for (Circle a : stars) {
             double oldWidth = a.getRadius();
-            a.setRadius(maxStarSize * 2 + margin);
+            a.setRadius((maxStarSize + margin) * 2);
             for (Circle b : stars) {
                 if (b != a && a.intersects(b.getBoundsInParent())) {
                     double maybe = Math.random() * 100;
-                    if (maybe <= 30) {
+                    if (maybe <= connectProb) {
                         this.connect(a, b);
                     }
                 }
@@ -142,12 +149,12 @@ public class Background_Starfield extends Background {
 
     protected void connect(Circle one, Circle two) {
         Node n1 = one, n2 = two;
-        double strokeWidth;
-        if (one.getRadius() < two.getRadius()) {
-            strokeWidth = one.getRadius() / 2;
-        } else {
-            strokeWidth = two.getRadius() / 2;
-        }
+//        double strokeWidth;
+//        if (one.getRadius() < two.getRadius()) {
+//            strokeWidth = one.getRadius() / 2;
+//        } else {
+//            strokeWidth = two.getRadius() / 2;
+//        }
         if (pane == null) {
             System.out.println("Tis null");
         } else {
@@ -170,6 +177,7 @@ public class Background_Starfield extends Background {
                 Bounds b = n2.getBoundsInParent();
                 return b.getMinY() + b.getHeight() / 2;
             }, n2.boundsInParentProperty()));
+            line.strokeWidthProperty().bind(one.radiusProperty().add(two.radiusProperty()).divide(10));
             parent.getChildren().add(line);
             n1.toFront();
             n2.toFront();
@@ -177,7 +185,7 @@ public class Background_Starfield extends Background {
     }
 
     private double map(double x) {
-        double inMin = 0, inMax = this.maxStarSize+1, outMin = 50, outMax = 210;
+        double inMin = 0, inMax = this.maxStarSize + 5, outMin = 1, outMax = 255;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         return done;
     }

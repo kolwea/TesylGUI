@@ -18,9 +18,7 @@ public class Main_Model {
     private Main_Controller controller;
 
     public Main_Model(Stage home) {
-        view = new Main_View();
-        view.setStage(home);
-       
+        view = new Main_View(home);       
     }
 
     public Pane getRoot() {

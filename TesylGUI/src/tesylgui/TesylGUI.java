@@ -23,10 +23,12 @@ public class TesylGUI extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(1100);
         Main_Model main = new Main_Model(primaryStage);
         Pane root = main.getRoot();
 //        Background_Starfield stars = new Background_Starfield(root);
-        
+
         Button btn = new Button();
         btn.setText("Populate");
         btn.setOnAction(new EventHandler<ActionEvent>() {
@@ -39,9 +41,9 @@ public class TesylGUI extends Application {
         });
 
 //        root.getChildren().addAll(stars.getPane(), btn);
-
-        Scene scene = new Scene(root, 1500, 1000);
+        Scene scene = new Scene(root, 1100, 600);
         scene.getStylesheets().add("tesylgui/MainStyle.css");
+
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();
