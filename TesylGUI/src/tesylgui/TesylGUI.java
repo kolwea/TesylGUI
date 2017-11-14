@@ -5,7 +5,6 @@
  */
 package tesylgui;
 
-import Background_Starfield.Background_Starfield;
 import View_Main.Main_Model;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -19,6 +18,7 @@ import javafx.stage.Stage;
  *
  * @author Kolbe
  */
+
 public class TesylGUI extends Application {
 
     @Override

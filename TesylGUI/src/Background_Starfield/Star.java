@@ -30,7 +30,7 @@ public class Star {
         setupBody();
         this.setPosition(initialPosition);
         this.setPreferedSize(preferredRadius);
-        growRate = 0.03;
+        growRate = 0.0002;
         minStarSize = 5.0;
         maxStarSize = 18.0;
     }
@@ -65,8 +65,10 @@ public class Star {
         return this.body;
     }
 
-    //Update/////////////////////
+    //Update////////////////////////////////////////////////////////////////////
     protected void update() {
+        if(body.getRadius() > 18)
+            body.setRadius(18);
         updateSize();
         updateColor();
     }
@@ -74,14 +76,14 @@ public class Star {
     protected void updateSize() {
         double radius = body.getRadius();
         if (grow) {
-            body.setRadius(radius + Math.random() * growRate);
+            body.setRadius(radius + Math.random()*100 * growRate);
             radius = body.getRadius();
             if (radius >= localMaxSize) {
                 grow = false;
                 updateSize();
             }
         } else {
-            body.setRadius(radius - Math.random() * growRate);
+            body.setRadius(radius - Math.random()*100 * growRate);
             radius = body.getRadius();
             if (radius <= localMinSize) {
                 grow = true;
@@ -93,9 +95,9 @@ public class Star {
     private void updateColor() {
         double radius = body.getRadius();
         body.setFill(Color.rgb(
-                (int) (mapColor(radius) + Math.random() * 3),
-                (int) (mapColor(radius) + Math.random() * 3),
-                (int) (mapColor(radius) + Math.random() * 3)
+               1,
+                (int) mapColor(radius),
+               1
         ));
     }
     
@@ -107,8 +109,12 @@ public class Star {
     }
 
     private double mapColor(double x) {
-        double inMin = 0, inMax = localMaxSize+1, outMin = 1, outMax = 255;
+        double inMin = minStarSize, inMax = maxStarSize+1, outMin = 100, outMax = 255;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
+        if(done >= 255){
+            System.out.println(x);
+            done = 255;
+        }
         return done;
     }
 

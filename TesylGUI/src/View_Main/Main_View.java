@@ -22,7 +22,7 @@ public class Main_View {
     private Pane background;
     private VBox header;
     private HBox selector;
-     
+    private VBox bottom;
 
     protected Main_View(Stage home) {
         setup();
@@ -31,7 +31,7 @@ public class Main_View {
 
     private void setup() {
         root = new BorderPane();
-        root.setStyle("-fx-background-color: #454955");
+        root.setStyle("-fx-background-color: #222222;");
 
     }
 
@@ -47,6 +47,7 @@ public class Main_View {
         System.out.println(root.getMinWidth() + " " + root.getMinHeight());
         setupBackground();
         setupSelector();
+        setupBottom();
     }
 
     private void setupBackground() {
@@ -75,12 +76,21 @@ public class Main_View {
         System.out.println(selector.getMinWidth() + " SELECTOR " + selector.getMinHeight());
         selector.toFront();
         selector.setStyle(
-                "-fx-background-color: #f3eff5;"+                
-//                "-fx-background-insets: 10; " +
+                "-fx-background-color: #a63446;"
+                + //                "-fx-background-insets: 10; " +
                 "-fx-effect: dropshadow(gaussian, black, 10, 0, 2, 0);");
     }
 
     private void setupChoices() {
+        
+    }
 
+    private void setupBottom() {
+        bottom = new VBox();
+        root.setBottom(bottom);
+        bottom.minWidthProperty().bind(root.minWidthProperty());
+        bottom.minHeightProperty().bind(root.minHeightProperty().divide(25));
+        bottom.toFront();
+        bottom.setStyle("-fx-background-color: grey;");
     }
 }
