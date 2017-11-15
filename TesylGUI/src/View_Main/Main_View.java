@@ -31,7 +31,7 @@ public class Main_View {
 
     private void setup() {
         root = new BorderPane();
-        root.setStyle("-fx-background-color: #222222;");
+        root.setStyle("-fx-background-color: #292F36;");
 
     }
 
