@@ -30,7 +30,7 @@ public class Star {
         setupBody();
         this.setPosition(initialPosition);
         this.setPreferedSize(preferredRadius);
-        growRate = 0.0002;
+        growRate = 0.0005;
         minStarSize = 5.0;
         maxStarSize = 18.0;
     }
@@ -95,9 +95,9 @@ public class Star {
     private void updateColor() {
         double radius = body.getRadius();
         body.setFill(Color.rgb(
-               1,
+               35,
                 (int) mapColor(radius),
-               1
+               107
         ));
     }
     
@@ -109,7 +109,7 @@ public class Star {
     }
 
     private double mapColor(double x) {
-        double inMin = minStarSize, inMax = maxStarSize+1, outMin = 100, outMax = 255;
+        double inMin = minStarSize, inMax = maxStarSize+1, outMin = 50, outMax = 205;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         if(done >= 255){
             System.out.println(x);

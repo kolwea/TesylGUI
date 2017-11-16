@@ -6,6 +6,7 @@
 package View_Main;
 
 import Background_Starfield.Background_Starfield;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -31,7 +32,7 @@ public class Main_View {
 
     private void setup() {
         root = new BorderPane();
-        root.setStyle("-fx-background-color: #222222;");
+        root.setStyle("-fx-background-color: #292F36;");
 
     }
 
@@ -48,6 +49,7 @@ public class Main_View {
         setupBackground();
         setupSelector();
         setupBottom();
+        setupChoices();
     }
 
     private void setupBackground() {
@@ -82,7 +84,18 @@ public class Main_View {
     }
 
     private void setupChoices() {
+        VBox choice = new VBox();
+        choice.setStyle("-fx-background-color: #222222;");
+        choice.minWidthProperty();
+        ScrollPane container = new ScrollPane(choice);
+        container.setStyle("-fx-background-color: #888888;");
         
+
+        root.setCenter(container);
+//        choices.setStyle("-fx-background-color: #FBFEF9");
+//        GraphBox A = new GraphBox(choice);
+//        choice.getChildren().add(A.getPane());
+
     }
 
     private void setupBottom() {
