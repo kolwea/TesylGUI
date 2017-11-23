@@ -18,15 +18,16 @@ import javafx.scene.shape.Circle;
 public class Emitter {
 
     private Color color = Color.BLANCHEDALMOND;
-    private double radius = 10.0,
-            emitDistance = 20.0;
+    private double 
+            radius = 10.0,
+            emitDistance = 50.0;
 
     private int index;
     private Pane parent;
     private double angle;
     private Vector velocity;
     private Vector position;
-    private ArrayList<Circle> children;
+    private ArrayList<Point> children;
 
     protected Emitter(Pane parent) {
         this.parent = parent;
@@ -35,7 +36,7 @@ public class Emitter {
 
     protected void setupPosition() {
         position = new Vector(parent.getMaxWidth() / 2, parent.getMinHeight() / 2);
-        angle = 0;
+        angle = 45;
         velocity = Vector.angleToVector(angle);
         children = new ArrayList<>();
 
@@ -49,33 +50,38 @@ public class Emitter {
     }
 
     private void emitNew() {
-        Circle last = null;
+        Point last = null;
         if(children.size() > 0)
             last = children.get(children.size() - 1);
         if (last == null) {
             emit();
-        } else if (position.distance(new Vector(last.getCenterX(), last.getCenterY())) > emitDistance) {
+        } else if (position.distance(new Vector(last.getBody().getCenterX(), last.getBody().getCenterY())) > emitDistance) {
             emit();
         }
     }
 
     private void emit() {
-        Circle hold = new Circle();
-        hold.setFill(color);
-        hold.setCenterX(position.x);
-        hold.setCenterY(position.y);
-        hold.setRadius(radius);
+        Point hold = new Point(parent,position);
+        hold.setVector(velocity);
         children.add(hold);
-        parent.getChildren().add(hold);
+        parent.getChildren().add(hold.getBody());
     }
 
     protected void update() {
+        ArrayList<Point> removal = new ArrayList();
         emitNew();
-        for (Circle curr : children) {
-            double x = curr.getCenterX() + velocity.x;
-            double y = curr.getCenterY() + velocity.y;
-            curr.setCenterX(x);
-            curr.setCenterY(y);
+        for (Point curr : children) {
+            if(curr.inbound)
+                curr.update();
+            else{
+                removal.add(curr);
+            }
+        }
+        Point.updateBounds();
+        for(Point curr : removal){
+            System.out.println("REMOVED");
+            parent.getChildren().remove(curr.getBody());
+            children.remove(curr);
         }
     }
 
