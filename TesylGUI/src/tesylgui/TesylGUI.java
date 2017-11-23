@@ -5,6 +5,8 @@
  */
 package tesylgui;
 
+import Start_Page.StartPage;
+import Tools.Vector;
 import View_Main.Main_Model;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -25,26 +27,15 @@ public class TesylGUI extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(1100);
+
         Main_Model main = new Main_Model(primaryStage);
-        Pane root = main.getRoot();
-//        Background_Starfield stars = new Background_Starfield(root);
+        StartPage start = new StartPage(primaryStage);
+        
+        Pane root = start.getView();
+        
+        Scene scene = new Scene(root);
 
-        Button btn = new Button();
-        btn.setText("Populate");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-//                if (stars != null) {
-//                    stars.testPoints();
-//                }
-            }
-        });
-
-//        root.getChildren().addAll(stars.getPane(), btn);
-        Scene scene = new Scene(root, 1100, 600);
-        scene.getStylesheets().add("tesylgui/MainStyle.css");
-
-        primaryStage.setTitle("Hello World!");
+        primaryStage.setTitle("Tesyl");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -54,6 +45,7 @@ public class TesylGUI extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        Vector.angleToVector(0);
     }
 
 }
