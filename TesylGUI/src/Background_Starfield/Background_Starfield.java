@@ -17,7 +17,6 @@ import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
@@ -29,8 +28,6 @@ import javafx.util.Duration;
 public class Background_Starfield extends Background {
 
     private ArrayList<Star> stars;
-    private int[] direction;
-    private Line[] lines;
     private final double minStarSize = 5.0,
             maxStarSize = 18.0,
             margin = 8.0,
