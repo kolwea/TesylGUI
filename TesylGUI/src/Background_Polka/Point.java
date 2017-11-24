@@ -126,7 +126,7 @@ public class Point {
     }
 
     private double mapColor(double x) {
-        double inMin = 0, inMax = pane.getMaxHeight()+pane.getMinWidth() + 1, outMin = 50, outMax = 205;
+        double inMin = 0, inMax = pane.getMaxHeight()+pane.getMinWidth() + 1, outMin = 100 , outMax = 205;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         if (done >= 255) {
             done = 255;

@@ -28,7 +28,7 @@ public class Background_Polka {
     private final double KEYFRAME_DURATION = 50.0; //In milliseconds
 
     private final double EMITTER_RADIUS = 50.0;
-    private final double EMIT_RADIUS = 10.0; //radius size of emitted circles
+    private final double EMIT_RADIUS = 5.0; //radius size of emitted circles
     private final Color EMIT_COLOR = Color.ANTIQUEWHITE;
     private final double EMIT_SPEED = 1.0; //multiplier for speed of emitted cirlces. 1.0 = 100% speed;
     private final double EMITTER_PADDING = 0;
@@ -61,7 +61,7 @@ public class Background_Polka {
         rootPane.minHeightProperty().bind(stage.minHeightProperty());
         rootPane.minWidthProperty().bind(stage.minWidthProperty());
         rootPane.setStyle(
-                "-fx-background-color: #223344;"
+                "-fx-background-color: #FFFFFF;"
                 + "-fx-border-color: red;"
                 + "-fx-border-width: 10px;");
     }
@@ -93,15 +93,22 @@ public class Background_Polka {
                 Vector velo = Vector.angleToVector(0);
                 hold.setupInit(pos, velo, EMITTER_RADIUS, EMIT_RADIUS, EMIT_COLOR, EMIT_DISTANCE, EMIT_SPEED);
                 emitters.add(hold);
-                if (emitters.size() == 2) {
-                    Emitter one = emitters.get(0);
-                    Emitter two = emitters.get(1);
-
-                    dist = one.getPosition().distance(two.getPosition());
-                }
             }
         }
-        for(Emitter a : emitters){
+        double distHold = 0;
+        for (int j = 0; j < emitters.size()-1; j++) {
+            Emitter one = emitters.get(j);
+            Emitter two = emitters.get(j + 1);
+            if (one == null || two == null); else {
+                distHold = one.getPosition().distance(two.getPosition());
+                if (distHold > dist && distHold < rootPane.getMinHeight()/2) {
+                    dist = distHold;
+                }
+            }
+
+        }
+        for (Emitter a : emitters) {
+
             a.setEmitDistance(dist);
         }
     }

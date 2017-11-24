@@ -51,7 +51,7 @@ public class Emitter {
         body.setCenterX(position.x);
         body.setCenterY(position.y);
 //        body.setFill(Color.BLUE);
-        body.setRadius(radiusthis);
+        body.setRadius(0);
         parent.getChildren().add(body);
 
     }
