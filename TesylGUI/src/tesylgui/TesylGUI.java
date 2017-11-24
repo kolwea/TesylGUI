@@ -9,10 +9,7 @@ import Start_Page.StartPage;
 import Tools.Vector;
 import View_Main.Main_Model;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -27,6 +24,9 @@ public class TesylGUI extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(1100);
+        
+        primaryStage.setHeight(600);
+        primaryStage.setWidth(1100);
 
         Main_Model main = new Main_Model(primaryStage);
         StartPage start = new StartPage(primaryStage);

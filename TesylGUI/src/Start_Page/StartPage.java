@@ -5,6 +5,7 @@
  */
 package Start_Page;
 
+import Background_Polka.Background_Polka;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -15,11 +16,11 @@ import javafx.stage.Stage;
 public class StartPage {
     
     private Stage stage;
-    private final StartView view;
+    private final Background_Polka view;
     
     
     public StartPage(Stage stage){
-        view = new StartView(stage);
+        view = new Background_Polka(stage);
     }
     
     public Pane getView(){
