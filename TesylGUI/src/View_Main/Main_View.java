@@ -91,7 +91,7 @@ public class Main_View {
         container.setStyle("-fx-background-color: #888888;");
         
 
-        root.setCenter(container);
+//        root.setCenter(container);
 //        choices.setStyle("-fx-background-color: #FBFEF9");
 //        GraphBox A = new GraphBox(choice);
 //        choice.getChildren().add(A.getPane());

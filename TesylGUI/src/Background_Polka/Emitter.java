@@ -50,8 +50,8 @@ public class Emitter {
         Circle body = new Circle();
         body.setCenterX(position.x);
         body.setCenterY(position.y);
-//        body.setFill(Color.BLUE);
-        body.setRadius(0);
+        body.setFill(Color.BLUE);
+        body.setRadius(2);
         parent.getChildren().add(body);
 
     }
@@ -89,8 +89,9 @@ public class Emitter {
         }
         if (last == null) {
             emit();
-        } else if (position.distance(last.getPosition()) > emitDistance) {
+        } else if (position.distance(last.getPosition().add(velocity)) > emitDistance) {
             emit();
+            last.inbound = false;
         }
     }
 

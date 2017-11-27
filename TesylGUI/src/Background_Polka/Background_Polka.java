@@ -31,8 +31,9 @@ public class Background_Polka {
     private final double EMIT_RADIUS = 5.0; //radius size of emitted circles
     private final Color EMIT_COLOR = Color.ANTIQUEWHITE;
     private final double EMIT_SPEED = 1.0; //multiplier for speed of emitted cirlces. 1.0 = 100% speed;
-    private final double EMITTER_PADDING = 0;
-    private final double EMIT_DISTANCE = 2 * EMIT_RADIUS + EMITTER_PADDING;
+    private final double EMITTER_PADDING = 10;
+    private final double INIT_VECTOR_ANGLE = 225;
+    private final double EMIT_DISTANCE = 0;
 
     //Class Variables///////////////////////////////////////////////////////////
     private Pane rootPane;
@@ -84,29 +85,33 @@ public class Background_Polka {
 
     private void test() {
         emitters = new ArrayList<>();
-
+        Emitter distOne = null, distTwo = null;
         double dist = 0;
-        for (int i = 0; i < rootPane.getMinHeight(); i += EMITTER_RADIUS + EMITTER_PADDING) {
-            for (int k = 0; k < rootPane.getMinWidth(); k += EMITTER_RADIUS + EMITTER_PADDING) {
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        for (int i = 0; i < screenSize.getHeight(); i += EMITTER_RADIUS + EMITTER_PADDING) {
+            for (int k = 0; k < screenSize.getWidth(); k += EMITTER_RADIUS + EMITTER_PADDING) {
                 Emitter hold = new Emitter(this.rootPane);
                 Vector pos = new Vector(k, i);
-                Vector velo = Vector.angleToVector(0);
+                Vector velo = Vector.angleToVector(INIT_VECTOR_ANGLE);
                 hold.setupInit(pos, velo, EMITTER_RADIUS, EMIT_RADIUS, EMIT_COLOR, EMIT_DISTANCE, EMIT_SPEED);
                 emitters.add(hold);
-            }
-        }
-        double distHold = 0;
-        for (int j = 0; j < emitters.size()-1; j++) {
-            Emitter one = emitters.get(j);
-            Emitter two = emitters.get(j + 1);
-            if (one == null || two == null); else {
-                distHold = one.getPosition().distance(two.getPosition());
-                if (distHold > dist && distHold < rootPane.getMinHeight()/2) {
-                    dist = distHold;
-                }
-            }
 
+                if (i < EMITTER_RADIUS + EMITTER_PADDING + 1) {
+                    if (i == 0 && k == 0) {
+                        distOne = emitters.get(0);
+                        System.out.println("FirstTime");
+                    } else if (i == EMITTER_RADIUS + EMITTER_PADDING && k == EMITTER_RADIUS + EMITTER_PADDING) {
+                        distTwo = emitters.get(emitters.size() - 1);
+                        dist = distTwo.getPosition().distance(distOne.getPosition());
+                        System.out.println("Did it " + dist);
+                    }
+                }
+
+            }
         }
+
         for (Emitter a : emitters) {
 
             a.setEmitDistance(dist);

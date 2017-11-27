@@ -103,8 +103,8 @@ public class Point {
 
     //Static Functions//////////////////////////////////////////////////////////
     protected static void updateBounds() {
-        width = pane.getMinWidth();
-        height = pane.getMinHeight();
+        width = pane.getWidth();
+        height = pane.getHeight();
     }
 
     //Helper Functions//////////////////////////////////////////////////////////

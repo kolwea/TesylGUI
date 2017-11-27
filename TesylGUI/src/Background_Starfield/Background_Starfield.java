@@ -28,7 +28,8 @@ import javafx.util.Duration;
 public class Background_Starfield extends Background {
 
     private ArrayList<Star> stars;
-    private final double minStarSize = 5.0,
+    private final double 
+            minStarSize = 5.0,
             maxStarSize = 18.0,
             margin = 8.0,
             connectProb = 70,
@@ -43,7 +44,6 @@ public class Background_Starfield extends Background {
     public Background_Starfield(Pane parent) {
         super(parent);
         pane = new Pane();
-        pane.setMinSize(1500, 1000);
         this.setup();
 
     }
