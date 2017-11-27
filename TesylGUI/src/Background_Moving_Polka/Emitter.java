@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Background_Polka;
+package Background_Moving_Polka;
 
 import Tools.Vector;
 import java.util.ArrayList;
@@ -65,13 +65,15 @@ public class Emitter {
         emitNew();
         for (Point curr : children) {
             curr.update();
-            if (!curr.inbound && (position.distance(curr.getPosition()) % emitDistance == 0)) {
+            if (!curr.inbound) {
                 remove.add(curr);
             }
         }
         for (Point curr : remove) {
-            parent.getChildren().remove(curr.getBody());
-            children.remove(curr);
+            if (position.distance(curr.getPosition()) % emitDistance == 0) {
+                parent.getChildren().remove(curr.getBody());
+                children.remove(curr);
+            }
         }
     }
 
@@ -91,7 +93,7 @@ public class Emitter {
     private void emitNew() {
         if (last == null) {
             emit();
-        } else if (position.distance(last.getPosition().add(Vector.angleToVector(angle))) >= emitDistance) {
+        } else if (position.distance(last.getPosition().add(Vector.angleToVector(angle))) >= 2*emitDistance) {
             emit();
         }
     }
