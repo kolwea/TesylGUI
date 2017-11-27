@@ -25,13 +25,13 @@ import javafx.util.Duration;
 public class Background_Polka {
 
     //Constant Variables////////////////////////////////////////////////////////
-    private final double KEYFRAME_DURATION = 50.0; //In milliseconds
+    private final double KEYFRAME_DURATION = 10.0; //In milliseconds
 
     private final double EMITTER_RADIUS = 50.0;
-    private final double EMIT_RADIUS = 5.0; //radius size of emitted circles
+    private final double EMIT_RADIUS = 10.0; //radius size of emitted circles
     private final Color EMIT_COLOR = Color.ANTIQUEWHITE;
-    private final double EMIT_SPEED = 1.0; //multiplier for speed of emitted cirlces. 1.0 = 100% speed;
-    private final double EMITTER_PADDING = 10;
+    private final double EMIT_SPEED = 0.5; //multiplier for speed of emitted cirlces. 1.0 = 100% speed;
+    private final double EMITTER_PADDING = 30;
     private final double INIT_VECTOR_ANGLE = 225;
     private final double EMIT_DISTANCE = 0;
 
@@ -80,7 +80,6 @@ public class Background_Polka {
         for (Emitter curr : emitters) {
             curr.update();
         }
-//    emitters.update();
     }
 
     private void test() {
@@ -90,8 +89,8 @@ public class Background_Polka {
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        for (int i = 0; i < screenSize.getHeight(); i += EMITTER_RADIUS + EMITTER_PADDING) {
-            for (int k = 0; k < screenSize.getWidth(); k += EMITTER_RADIUS + EMITTER_PADDING) {
+        for (double i = - (EMITTER_RADIUS + EMITTER_PADDING); i < screenSize.getHeight() + EMITTER_RADIUS + EMITTER_PADDING; i += EMITTER_RADIUS + EMITTER_PADDING) {
+            for (double k = -(EMITTER_RADIUS + EMITTER_PADDING); k < screenSize.getWidth() + EMITTER_RADIUS + EMITTER_PADDING; k += EMITTER_RADIUS + EMITTER_PADDING) {
                 Emitter hold = new Emitter(this.rootPane);
                 Vector pos = new Vector(k, i);
                 Vector velo = Vector.angleToVector(INIT_VECTOR_ANGLE);

@@ -5,7 +5,6 @@
  */
 package Background_Polka;
 
-import Background_Polka.Point;
 import Tools.Vector;
 import java.util.ArrayList;
 import javafx.scene.layout.Pane;
@@ -27,6 +26,7 @@ public class Emitter {
     private double emitSpeed;
     private double emitDistance;
     private ArrayList<Point> children;
+    private Point last;
 
     //Constructor Functions/////////////////////////////////////////////////////
     protected Emitter(Pane parent) {
@@ -38,66 +38,63 @@ public class Emitter {
         this.parent = parent;
     }
 
-    protected void setupInit(Vector position, Vector velocity,double radiusthis, double radius, Color color, double emitDist, double emitSpeed) {
-        this.children = new ArrayList<>();
+    protected void setupInit(Vector position, Vector velocity, double radiusthis, double radius, Color color, double emitDist, double emitSpeed) {
         this.position = position;
         this.velocity = velocity;
         this.color = color;
         this.emitDistance = emitDist;
-        this.radius = radius*2;
+        this.radius = radius * 2;
         this.emitSpeed = emitSpeed;
+        this.children = new ArrayList<>();
 
         Circle body = new Circle();
         body.setCenterX(position.x);
         body.setCenterY(position.y);
-        body.setFill(Color.BLUE);
-        body.setRadius(2);
+//        body.setFill(Color.BLUE);
+        body.setRadius(0);
         parent.getChildren().add(body);
 
     }
 
     protected void update() {
-        ArrayList<Point> removal = new ArrayList();
+        if(children.isEmpty())
+            last = null;
+        ArrayList<Point> remove = new ArrayList<>();
         emitNew();
+        Point.updateBounds();
         for (Point curr : children) {
-            if (curr.inbound) {
-                curr.update();
-            } else {
-                removal.add(curr);
+            curr.update();
+            if (!curr.inbound && (position.distance(curr.getPosition()) % emitDistance == 0)) {
+                remove.add(curr);
             }
         }
-        Point.updateBounds();
-        for (Point curr : removal) {
+        for (Point curr : remove) {
             parent.getChildren().remove(curr.getBody());
             children.remove(curr);
         }
     }
-    
-    protected void setEmitDistance(double dist){
+
+    protected void setEmitDistance(double dist) {
         this.emitDistance = dist;
     }
-    
-    protected Vector getPosition(){
+
+    protected Vector getPosition() {
         return this.position;
     }
 
     //Helper Functions//////////////////////////////////////////////////////////
     private void emitNew() {
-        Point last = null;
-        if (children.size() > 0) {
-            last = children.get(children.size() - 1);
-        }
         if (last == null) {
             emit();
-        } else if (position.distance(last.getPosition().add(velocity)) > emitDistance) {
+        } else if (position.distance(last.getPosition().add(velocity)) == emitDistance){
             emit();
-            last.inbound = false;
         }
     }
 
     private void emit() {
         Point hold = new Point();
         hold.setupInit(this.parent, position, velocity, radius, color, emitSpeed);
+        last = hold;
         children.add(hold);
         parent.getChildren().add(hold.getBody());
     }

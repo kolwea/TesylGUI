@@ -6,6 +6,8 @@
 package Background_Polka;
 
 import Tools.Vector;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -27,7 +29,7 @@ public class Point {
     //Static Variables//////////////////////////////////////////////////////////
     private static Pane pane;
     private static double width, height;
-    private static final double MAXOUTBOUNDCOUNT = 50;
+    private static final double MAXOUTBOUNDCOUNT = 200;
 
     protected Point() {
         setup();
@@ -81,10 +83,9 @@ public class Point {
 
     protected void update() {
         checkInBound();
-        position = position.add(velocity);
-        position.x *= speed;
-        position.y *= speed;
-        body.setFill(Color.rgb(35, (int) mapColor(position.x+position.y), 107));
+        Vector vel = new Vector(velocity.x*speed,velocity.y*speed);
+        position = position.add(vel);
+        body.setFill(Color.rgb(35, (int) mapColor(position.x + position.y), 107));
         body.setCenterX(position.x);
         body.setCenterY(position.y);
     }
@@ -103,8 +104,10 @@ public class Point {
 
     //Static Functions//////////////////////////////////////////////////////////
     protected static void updateBounds() {
-        width = pane.getWidth();
-        height = pane.getHeight();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+        width = screenSize.getWidth();
+        height = screenSize.getHeight();
     }
 
     //Helper Functions//////////////////////////////////////////////////////////
@@ -126,7 +129,7 @@ public class Point {
     }
 
     private double mapColor(double x) {
-        double inMin = 0, inMax = pane.getMaxHeight()+pane.getMinWidth() + 1, outMin = 100 , outMax = 205;
+        double inMin = 0, inMax = pane.getMaxHeight() + pane.getMinWidth() + 1, outMin = 100, outMax = 205;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         if (done >= 255) {
             done = 255;
