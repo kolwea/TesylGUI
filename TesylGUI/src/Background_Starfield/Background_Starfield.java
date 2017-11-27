@@ -167,7 +167,7 @@ public class Background_Starfield extends Background {
     }
 
     private double mapColor(double x) {
-        double inMin = 0, inMax = this.maxStarSize + 6, outMin = 1, outMax = 255;
+        double inMin = 0, inMax = this.maxStarSize + 6, outMin = 5, outMax = 255;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         return done;
     }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Background_Polka;
+package Background_Moving_Polka;
 
 import Tools.Vector;
 import java.awt.Dimension;
@@ -29,10 +29,10 @@ public class Background_Polka {
 
     private final double EMITTER_RADIUS = 20.0;
     private final double EMIT_RADIUS = 10.0; //radius size of emitted circles
-    private final Color EMIT_COLOR = Color.ANTIQUEWHITE;
-    private final double EMIT_SPEED = 1.0; //multiplier for speed of emitted cirlces. 1.0 = 100% speed;
+    private final Color EMIT_COLOR = Color.RED;
+    private final double EMIT_SPEED = 2.0; //multiplier for speed of emitted cirlces. 1.0 = 100% speed;
     private final double EMITTER_PADDING = 100;
-    private final double INIT_VECTOR_ANGLE = 225;
+    private final double INIT_VECTOR_ANGLE = 45;
     private final double EMIT_DISTANCE = 0;
     private final double CHANGE_FRAME_INTERVAL = 100;
 
@@ -95,12 +95,14 @@ public class Background_Polka {
         for (i = -(EMITTER_RADIUS + EMITTER_PADDING); i < screenSize.getWidth() + (EMITTER_RADIUS + EMITTER_PADDING); i += EMITTER_RADIUS + EMITTER_PADDING) {
             for (k = -(EMITTER_RADIUS + EMITTER_PADDING); k < screenSize.getHeight() + (EMITTER_RADIUS + EMITTER_PADDING); k += EMITTER_RADIUS + EMITTER_PADDING) {
                 if ((i < 0 || i >= screenSize.getWidth()) || (k < 0 || k >= screenSize.getHeight())) {
-                    System.out.println("X " + k + " Y " + i);
-
-//                System.out.println("X " + i + " Y " + k );
                     Emitter hold = new Emitter(rootPane);
                     Vector pos = new Vector(k, i);
-                    hold.setupInit(pos, INIT_VECTOR_ANGLE, EMITTER_RADIUS, EMIT_RADIUS, EMIT_COLOR, EMIT_DISTANCE, EMIT_SPEED);
+                    if (k >= screenSize.getWidth()/2) {
+                        System.out.println(i);
+                        hold.setupInit(pos, INIT_VECTOR_ANGLE+90, EMITTER_RADIUS, EMIT_RADIUS, EMIT_COLOR, EMIT_DISTANCE, EMIT_SPEED);
+                    } else {
+                        hold.setupInit(pos, INIT_VECTOR_ANGLE, EMITTER_RADIUS, EMIT_RADIUS, EMIT_COLOR, EMIT_DISTANCE, EMIT_SPEED);
+                    }
                     emitters.add(hold);
                 }
             }

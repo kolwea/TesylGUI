@@ -5,7 +5,7 @@
  */
 package Start_Page;
 
-import Background_Polka.Background_Polka;
+import Background_Moving_Polka.Background_Polka;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
@@ -14,17 +14,20 @@ import javafx.stage.Stage;
  * @author Kolbe
  */
 public class StartPage {
-    
+
     private Stage stage;
-    private final Background_Polka view;
-    
-    
-    public StartPage(Stage stage){
-        view = new Background_Polka(stage);
+    private final Background_Polka background;
+    private Pane rootPane;
+
+    public StartPage(Stage stage) {
+        background = new Background_Polka(stage);
+        rootPane = background.getViewpane();
+        rootPane.setStyle("-fx-background-color: #292F36;");
+
     }
-    
-    public Pane getView(){
-        return view.getViewpane();
+
+    public Pane getView() {
+        return rootPane;
     }
-    
+
 }

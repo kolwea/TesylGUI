@@ -3,9 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Background_Polka;
+package Background_Moving_Polka;
 
-import Background_Moving_Polka.*;
 import Tools.Vector;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -32,7 +31,7 @@ public class Point {
     //Static Variables//////////////////////////////////////////////////////////
     private static Pane pane;
     private static double width, height;
-    private static final double MAXOUTBOUNDCOUNT = 100;
+    private static final double MAXOUTBOUNDCOUNT = 25;
 
     protected Point() {
         setup();
@@ -89,7 +88,7 @@ public class Point {
         checkInBound();
         Vector vel = new Vector(velocity.x * speed, velocity.y * speed);
         position = position.add(vel);
-        body.setFill(Color.rgb(35, (int) mapColor(position.x + position.y), 107));
+//        body.setFill(Color.rgb(35, 207, 107));
         body.setCenterX(position.x);
         body.setCenterY(position.y);
     }
@@ -104,11 +103,12 @@ public class Point {
         body.setCenterY(position.y);
         body.setRadius(radius);
         body.setFill(color);
+        body.setStyle("-fx-fill:#23CE6B;");
 
         DropShadow dropShadow = DropShadowBuilder.create()
-                .offsetX(5.0f)
-                .offsetY(2.0f)
-                .color(Color.rgb(40, 40, 40, .588))
+                .offsetX(3.0f)
+                .offsetY(3.0f)
+                .color(Color.rgb(100, 100, 100, .588))
                 .build();
         body.setEffect(dropShadow);
     }
@@ -140,7 +140,7 @@ public class Point {
     }
 
     private double mapColor(double x) {
-        double inMin = 0, inMax = pane.getMaxHeight() + pane.getMinWidth() + 1, outMin = 100, outMax = 205;
+        double inMin = 0, inMax = 2*(pane.getMaxHeight() + pane.getMinWidth()) , outMin = 100, outMax = 205;
         double done = (double) (outMin + ((outMax - outMin) / (inMax - inMin)) * (x - inMin));
         if (done >= 255) {
             done = 255;
